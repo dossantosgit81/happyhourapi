@@ -3,23 +3,24 @@ package br.com.happyhour.jwt;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
-import br.com.happyhour.domain.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
+@Component
 public class JWTService {
 	
 	@Value("${spring.jwt.subscription-key}")
 	private String subscriptionKey;
 	
-	@Value("spring.jwt.expiration")
+	@Value("${spring.jwt.expiration}")
 	private Long expiration;
 	
-	public String generateToken(User user) {
+	public String generateToken(String email) {
 		return Jwts.builder()
-		.setSubject(user.getEmail())
+		.setSubject(email)
 		.setExpiration(new Date(System.currentTimeMillis() + expiration))
 		.signWith(SignatureAlgorithm.HS512, subscriptionKey)
 		.compact();
@@ -36,11 +37,13 @@ public class JWTService {
 	
 	public boolean tokenIsValid(String token) {
 		Claims claims = getClaims(token);
+		System.out.println(claims);
 		if(claims != null) {
 			String userEmail = claims.getSubject();
 			Date expirationDate = claims.getExpiration();
 			Date dateNow = new Date(System.currentTimeMillis());
-			if(userEmail != null && expirationDate != null && dateNow.before(dateNow)) {
+			if(userEmail != null && expirationDate != null && dateNow.before(expirationDate)) {
+				System.out.println(userEmail +" "+ expirationDate +" "+ dateNow);
 				return true;
 			}
 		}

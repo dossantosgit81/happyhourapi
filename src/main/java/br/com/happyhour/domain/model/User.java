@@ -9,6 +9,8 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name="table_user")
 public class User {
@@ -25,9 +27,11 @@ public class User {
 	@Email(message="Informe um email válido")
 	private String email;
 	
+	@JsonIgnore
 	@NotBlank(message="Informe uma senha")
-	@Size(min=8, max=15, message="A senha deve ter entre 8 e 15 caracteres")
 	private String password;
+	
+	private boolean admin = false;
 	
 	public Long getId() {
 		return id;
@@ -59,6 +63,18 @@ public class User {
 	
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public boolean isAdmin() {
+		return admin;
+	}
+
+	public void setAdmin(boolean admin) {
+		this.admin = admin;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 	
