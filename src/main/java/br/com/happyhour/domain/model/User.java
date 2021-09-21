@@ -1,15 +1,16 @@
 package br.com.happyhour.domain.model;
 
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name="table_user")
@@ -27,11 +28,13 @@ public class User {
 	@Email(message="Informe um email válido")
 	private String email;
 	
-	@JsonIgnore
 	@NotBlank(message="Informe uma senha")
 	private String password;
 	
 	private boolean admin = false;
+	
+	@OneToMany(mappedBy = "user")
+	private List<Post> posts;
 	
 	public Long getId() {
 		return id;
@@ -76,7 +79,14 @@ public class User {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
+	public List<Post> getPosts() {
+		return posts;
+	}
+
+	public void setPosts(List<Post> posts) {
+		this.posts = posts;
+	}
 	
 
 }

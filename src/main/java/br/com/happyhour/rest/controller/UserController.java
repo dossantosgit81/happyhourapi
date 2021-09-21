@@ -1,7 +1,10 @@
 package br.com.happyhour.rest.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.modelmapper.ModelMapper;
@@ -43,8 +46,11 @@ public class UserController {
 	private ModelMapper modelMapper;
 	
 	@GetMapping
-	public List<User> list(){
-		return userRepository.findAll();
+	@ResponseStatus(HttpStatus.OK)
+	public List<UserDTO> list(){
+		List<UserDTO> result = userRepository.findAll().stream()
+				.map(entity -> modelMapper.map(entity, UserDTO.class)).collect(Collectors.toList());
+		return result;
 	}
 	
 	@ResponseStatus(HttpStatus.CREATED)
@@ -55,7 +61,8 @@ public class UserController {
 	}
 	
 	@PostMapping("/auth")
-	public TokenDTO auth(@RequestBody CredentialsDTO credentials) {
+	@ResponseStatus(HttpStatus.OK)
+	public TokenDTO auth(@RequestBody CredentialsDTO credentials, HttpServletResponse res, HttpServletRequest req) {
 		try {
 			User user = new User();
 			user.setEmail(credentials.getEmail());
@@ -64,8 +71,11 @@ public class UserController {
 			String token = "";
 			if(userDetails != null) {	
 				 token = jwtService.generateToken(user.getEmail());
+				 res.addHeader("Authorization","Bearer "+ token);
+				 res.addHeader("access-control-expose-headers", "Authorization");
 			}
 			
+					
 			return new TokenDTO(user.getEmail(), token);
 		}catch(PasswordInvalidException | UsernameNotFoundException e) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
