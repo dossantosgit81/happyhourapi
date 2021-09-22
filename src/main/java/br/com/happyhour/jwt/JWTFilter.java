@@ -29,12 +29,9 @@ public class JWTFilter extends OncePerRequestFilter{
 			throws ServletException, IOException {
 		
 		String authorization = request.getHeader("Authorization");
-		System.out.println("Test " + authorization);
 		if(authorization != null && authorization.startsWith("Bearer")) {
 			String token = authorization.split(" ")[1];
-			System.out.println("Chegou aqui");
 			boolean tokenIsValid = jwtService.tokenIsValid(token);
-			System.out.println("Token é valido "+tokenIsValid);
 			if(tokenIsValid) {
 				String userEmail = jwtService.getEmailUser(token);
 				UserDetails userDetails = userService.loadUserByUsername(userEmail);

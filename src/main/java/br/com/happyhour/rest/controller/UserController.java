@@ -75,7 +75,6 @@ public class UserController {
 				 res.addHeader("access-control-expose-headers", "Authorization");
 			}
 			
-					
 			return new TokenDTO(user.getEmail(), token);
 		}catch(PasswordInvalidException | UsernameNotFoundException e) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
